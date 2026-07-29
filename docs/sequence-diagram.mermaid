@@ -1,0 +1,66 @@
+sequenceDiagram
+    actor User
+    participant UI as CutoverSqlPage
+    participant API as api.ts
+    participant Ctrl as DocumentController
+    participant FMS as FieldMappingService
+    participant DocS as DocumentService
+    participant JUV as JdbcUrlValidator
+    participant CSS as CutoverSqlService
+    participant DSS as DataSourceStoreService
+
+    Note over Ctrl: LocalAuthInterceptor 校验 X-DBDoc-Token（覆盖所有 /api/**）
+    User->>UI: 选 A/B 数据源、Schema、表映射
+    UI->>API: exportCutoverSql(req)
+    API->>Ctrl: POST /api/document/mapping/export-cutover-sql
+    alt 前端已传 fieldMaps
+        Ctrl->>FMS: MatchResult.fromMap(raw) 逐表解码
+    else 未传，回退同名匹配
+        loop 每个表对(src→tgt)
+            Ctrl->>FMS: aiMatchFields(dsA,schemaA,src,dsB,schemaB,tgt)
+            FMS->>DocS: generateDocument(dsA,schemaA,[src])
+            DocS->>JUV: validate(jdbcUrl)  %% SSRF 防护
+            DocS-->>FMS: 源表结构
+            FMS->>DocS: generateDocument(dsB,schemaB,[tgt])
+            DocS->>JUV: validate(jdbcUrl)
+            DocS-->>FMS: 目标表结构
+            FMS-->>Ctrl: MatchResult
+        end
+    end
+    Ctrl->>CSS: generateCutoverSql(dsA,schemaA,dsB,schemaB,tm,fieldMaps)
+    CSS->>DSS: get(dsA)/get(dsB) 读方言 dbType
+    DSS-->>CSS: DataSourceConfigDTO(密码脱敏)
+    CSS-->>Ctrl: 三段式 SQL 文本(IIF→CASE 已翻译, ROLLBACK 注释提示)
+    Ctrl-->>API: {success, sql}
+    API-->>UI: 展示 / 下载 .sql
+
+%% ── AI 字段语义匹配链路 ──
+
+sequenceDiagram
+    actor User
+    participant UI as CutoverSqlPage
+    participant API as api.ts
+    participant Ctrl as DocumentController
+    participant FMS as FieldMappingService
+    participant DocS as DocumentService
+    participant JUV as JdbcUrlValidator
+    participant LC as LlmConfig
+    participant LLM as LlmAdapter
+
+    Note over Ctrl: LocalAuthInterceptor 校验 X-DBDoc-Token
+    User->>UI: 对某表对请求「AI 语义匹配」
+    UI->>API: aiSemanticMatch(req)
+    API->>Ctrl: POST /api/document/mapping/ai-semantic-match
+    Ctrl->>FMS: aiSemanticMatch(...)
+    FMS->>FMS: aiMatchFields 同名匹配(产出 source_only/target_only)
+    FMS->>DocS: generateDocument(...) ×2
+    DocS->>JUV: validate(url)  %% SSRF 防护
+    DocS-->>FMS: 表结构
+    FMS->>LC: buildAdapter(llmProperties)  %% 复用主线 LLM 客户端/密钥(CryptoUtil)
+    LC->>LLM: create(provider,baseUrl,model,apiKey)
+    FMS->>LLM: generate(systemPrompt,userPrompt)
+    LLM-->>FMS: JSON 数组(源→目标候选匹配)
+    FMS->>FMS: parseJsonArray + 合并 status=ai_matched
+    FMS-->>Ctrl: MatchResult(含 aiMatchedCount)
+    Ctrl-->>API: {success, result}
+    API-->>UI: 回填 fieldMaps 供割接复用

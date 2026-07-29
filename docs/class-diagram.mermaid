@@ -1,0 +1,95 @@
+classDiagram
+    class DataSourceConfigDTO {
+        +String id
+        +String name
+        +String dbType
+        +String url
+        +String username
+        +String password
+        +String schema
+        +getDbType() String
+    }
+
+    class FieldMapping {
+        +String sourceTable
+        +String sourceColumn
+        +String sourceType
+        +String targetTable
+        +String targetColumn
+        +String targetType
+        +String status
+        +double confidence
+        +String transformRule
+    }
+
+    class MatchResult {
+        +List~FieldMapping~ mappings
+        +int matchedCount
+        +int aiMatchedCount
+        +int conflictCount
+        +fromMap(raw Map) MatchResult$
+    }
+
+    class FieldMappingService {
+        -DocumentService documentService
+        -DataSourceStoreService storeService
+        -LlmProperties llmProperties
+        -LlmConfig llmConfig
+        +aiMatchFields(dsIdA,schemaA,tableA,dsIdB,schemaB,tableB) MatchResult
+        +aiSemanticMatch(dsIdA,schemaA,tableA,dsIdB,schemaB,tableB) MatchResult
+        +autoDetectTableMappings(dsIdA,schemaA,dsIdB,schemaB) List
+        +exportInfaXml(tm,fieldMaps,folder) String
+    }
+
+    class CutoverSqlService {
+        -DataSourceStoreService storeService
+        +generateCutoverSql(dsIdA,schemaA,dsIdB,schemaB,tableMappings,fieldMaps) String
+        -iifToCaseWhen(expr String) String$
+        -toSqlExpression(m FieldMapping) String$
+        -qualify(dialect,schema,table) String$
+        -quoteIdent(dialect,ident) String$
+        -dialectOf(ds DataSourceConfigDTO) String$
+        -splitTopLevel(s String) List~String~$
+    }
+
+    class DocumentController {
+        +exportCutoverSql(body Map) ResponseEntity
+        +aiSemanticMatch(body Map) ResponseEntity
+    }
+
+    class DocumentService {
+        +generateDocument(dsId,schema,tables) Map
+    }
+
+    class DataSourceStoreService {
+        +get(id String) DataSourceConfigDTO
+    }
+
+    class LlmConfig {
+        +buildAdapter(props LlmProperties) LlmAdapter$
+    }
+
+    class LlmAdapter {
+        <<interface>>
+        +generate(systemPrompt,userPrompt) String
+        +testConnection() boolean
+    }
+
+    class JdbcUrlValidator {
+        +validate(url String) String$
+    }
+
+    class LocalAuthInterceptor {
+        +preHandle(req,resp,handler) boolean
+    }
+
+    MatchResult "1" *-- "0..*" FieldMapping : mappings
+    FieldMappingService ..> DocumentService : generateDocument 经 JdbcUrlValidator
+    FieldMappingService ..> LlmConfig : buildAdapter(llmProperties)
+    LlmConfig ..> LlmAdapter : create
+    CutoverSqlService ..> DataSourceStoreService : get 读方言(dbType)
+    CutoverSqlService ..> FieldMappingService : 复用 MatchResult 结构
+    DocumentController ..> CutoverSqlService : generateCutoverSql
+    DocumentController ..> FieldMappingService : aiSemanticMatch / fromMap
+    DocumentService ..> JdbcUrlValidator : validate(url) SSRF 防护
+    LocalAuthInterceptor ..> DocumentController : 拦截所有 /api/**

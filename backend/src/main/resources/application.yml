@@ -1,0 +1,43 @@
+server:
+  port: 8080
+  address: 127.0.0.1
+  # P2-12: 优雅停机，等待在途请求处理完毕后再关闭
+  shutdown: graceful
+
+spring:
+  application:
+    name: dbdoc-ai-backend
+  jackson:
+    default-property-inclusion: non_null
+  # P2-12: 优雅停机等待窗口，确保关机阶段内清理完在途请求
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  datasource:
+    url: jdbc:sqlite:${user.home}/.dbdoc-ai/dbdoc.db
+    driver-class-name: org.sqlite.JDBC
+
+llm:
+  provider: ollama
+  ollama:
+    base-url: http://localhost:11434
+    model: qwen2.5:7b
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    base-url: https://api.openai.com/v1
+    model: gpt-4o-mini
+  siliconflow:
+    api-key: ${SILICONFLOW_API_KEY:}
+    base-url: https://api.siliconflow.cn/v1
+    model: Qwen/Qwen2.5-7B-Instruct
+  anthropic:
+    api-key: ${ANTHROPIC_API_KEY:}
+    base-url: ${ANTHROPIC_BASE_URL:https://<内部LLM代理地址>/anthropic}
+    model: ${ANTHROPIC_MODEL:g-deepseek-v4-pro}
+
+# 本地最小鉴权（P0-2 修复，fail-closed）。
+# dbdoc.auth.enabled: 设为 false 可临时关闭鉴权（仅限纯本地无外部访问的开发环境）。
+# 令牌来源：环境变量 DBDOC_LOCAL_TOKEN ＞ 本地文件 ~/.dbdoc-ai/.local-token（首次自动生成）。
+# 前端需在请求头携带 X-DBDoc-Token；Electron 由主进程读取令牌文件并暴露给渲染进程。
+dbdoc:
+  auth:
+    enabled: true

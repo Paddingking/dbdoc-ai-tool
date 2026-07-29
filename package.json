@@ -1,0 +1,17 @@
+{
+  "name": "dbdoc-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DBDoc AI — 会自己更新的数据库文档",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && ./mvnw spring-boot:run",
+    "install:all": "cd frontend && npm install && cd backend && ./mvnw install -DskipTests",
+    "build": "cd frontend && npm run build && cd backend && ./mvnw package -DskipTests",
+    "test": "cd frontend && npm test && cd backend && ./mvnw test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
