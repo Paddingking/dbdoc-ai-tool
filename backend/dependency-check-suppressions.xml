@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OWASP dependency-check 抑制规则。
+  初始为空：先跑 `mvn dependency-check:check` 产出报告，再针对误报/暂不可升级项逐条加 suppression。
+  注意：EOL 依赖（Spring Boot 2.7.x / Java 8 / Electron 28 / postgresql 42.6.0 / poi 5.2.5 / pdfbox 2.0.29）
+  应优先走真实升级，而非在此屏蔽。
+-->
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+</suppressions>
