@@ -265,7 +265,7 @@ export async function getLlmConfig(): Promise<LlmConfig> {
   return request('/api/llm/config');
 }
 
-export async function updateLlmConfig(data: { provider: string; apiKey: string; model: string }): Promise<any> {
+export async function updateLlmConfig(data: { provider: string; apiKey: string; model: string; baseUrl?: string }): Promise<any> {
   return request('/api/llm/config', {
     method: 'PUT',
     body: JSON.stringify(data),

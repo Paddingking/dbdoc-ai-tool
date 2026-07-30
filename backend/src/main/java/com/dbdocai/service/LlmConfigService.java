@@ -35,14 +35,23 @@ public class LlmConfigService {
             else if ("anthropic".equals(llmProperties.getProvider())) llmProperties.getAnthropic().setModel(model);
             else llmProperties.getOllama().setModel(model);
         }
-        if (cfg.containsKey("baseUrl")) {
-            String baseUrl = cfg.get("baseUrl");
-            if ("openai".equals(llmProperties.getProvider())) llmProperties.getOpenai().setBaseUrl(baseUrl);
-            else if ("siliconflow".equals(llmProperties.getProvider())) llmProperties.getSiliconflow().setBaseUrl(baseUrl);
-            else if ("anthropic".equals(llmProperties.getProvider())) llmProperties.getAnthropic().setBaseUrl(baseUrl);
-            else llmProperties.getOllama().setBaseUrl(baseUrl);
-        }
+        // B2: 按 provider 读取各自持久化的 baseUrl（新结构）；旧版单 baseUrl 键作为兜底
+        String legacyBaseUrl = cfg.get("baseUrl");
+        applyProviderBaseUrl(cfg, "ollama", legacyBaseUrl);
+        applyProviderBaseUrl(cfg, "openai", legacyBaseUrl);
+        applyProviderBaseUrl(cfg, "siliconflow", legacyBaseUrl);
+        applyProviderBaseUrl(cfg, "anthropic", legacyBaseUrl);
         log.info("LLM config from DB: provider={}", llmProperties.getProvider());
+    }
+
+    private void applyProviderBaseUrl(Map<String, String> cfg, String p, String legacy) {
+        String v = cfg.get("baseUrl." + p);
+        if (v == null) v = legacy;
+        if (v == null) return;
+        if ("ollama".equals(p)) llmProperties.getOllama().setBaseUrl(v);
+        else if ("openai".equals(p)) llmProperties.getOpenai().setBaseUrl(v);
+        else if ("siliconflow".equals(p)) llmProperties.getSiliconflow().setBaseUrl(v);
+        else if ("anthropic".equals(p)) llmProperties.getAnthropic().setBaseUrl(v);
     }
 
     public Map<String, Object> getConfig() {
@@ -62,10 +71,17 @@ public class LlmConfigService {
         models.put("siliconflow", llmProperties.getSiliconflow().getModel());
         models.put("anthropic", llmProperties.getAnthropic().getModel());
         cfg.put("models", models);
+        Map<String, String> baseUrls = new LinkedHashMap<>();
+        baseUrls.put("ollama", llmProperties.getOllama().getBaseUrl());
+        baseUrls.put("openai", llmProperties.getOpenai().getBaseUrl());
+        baseUrls.put("siliconflow", llmProperties.getSiliconflow().getBaseUrl());
+        baseUrls.put("anthropic", llmProperties.getAnthropic().getBaseUrl());
+        cfg.put("baseUrls", baseUrls);
         return cfg;
     }
 
-    public void updateConfig(String provider, String apiKey, String model) {
+    public void updateConfig(String provider, String apiKey, String model, String baseUrl) {
+        String p = (provider != null) ? provider : llmProperties.getProvider();
         if (provider != null) { llmProperties.setProvider(provider); db.setConfig("provider", provider); }
         if (apiKey != null && !apiKey.isEmpty()
             && !apiKey.startsWith("sk-***") && !apiKey.startsWith("ailab_***")) {
@@ -73,11 +89,19 @@ public class LlmConfigService {
             llmProperties.setApiKey(apiKey);
             db.setConfig("apiKey", CryptoUtil.encrypt(apiKey));
         }
+        if (baseUrl != null && !baseUrl.trim().isEmpty()) {
+            // B2: 按 provider 持久化 baseUrl（明文落盘：URL 非密钥，与 apiKey 加密策略区分）
+            if ("openai".equals(p)) llmProperties.getOpenai().setBaseUrl(baseUrl);
+            else if ("siliconflow".equals(p)) llmProperties.getSiliconflow().setBaseUrl(baseUrl);
+            else if ("anthropic".equals(p)) llmProperties.getAnthropic().setBaseUrl(baseUrl);
+            else llmProperties.getOllama().setBaseUrl(baseUrl);
+            db.setConfig("baseUrl." + p, baseUrl);
+        }
         if (model != null) {
             db.setConfig("model", model);
-            if ("openai".equals(llmProperties.getProvider())) llmProperties.getOpenai().setModel(model);
-            else if ("siliconflow".equals(llmProperties.getProvider())) llmProperties.getSiliconflow().setModel(model);
-            else if ("anthropic".equals(llmProperties.getProvider())) llmProperties.getAnthropic().setModel(model);
+            if ("openai".equals(p)) llmProperties.getOpenai().setModel(model);
+            else if ("siliconflow".equals(p)) llmProperties.getSiliconflow().setModel(model);
+            else if ("anthropic".equals(p)) llmProperties.getAnthropic().setModel(model);
             else llmProperties.getOllama().setModel(model);
         }
         log.info("LLM config updated: provider={} model={}", llmProperties.getProvider(), model);

@@ -40,7 +40,7 @@ export default function SettingsPage() {
     setTesting(true);
     try {
       // 先保存配置，再用保存后的配置测试
-      await updateLlmConfig({ provider, apiKey, model });
+      await updateLlmConfig({ provider, apiKey, model, baseUrl });
       const result = await testLlmConnection();
       if (result.success) {
         showToast('连接成功', 'success');
@@ -57,7 +57,7 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateLlmConfig({ provider, apiKey, model });
+      await updateLlmConfig({ provider, apiKey, model, baseUrl });
       showToast('配置已保存', 'success');
     } catch (e: any) {
       showToast(e.message, 'error');

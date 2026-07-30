@@ -34,7 +34,8 @@ public class LlmController {
         String provider = body.get("provider");
         String apiKey = body.get("apiKey");
         String model = body.get("model");
-        configService.updateConfig(provider, apiKey, model);
+        String baseUrl = body.get("baseUrl");
+        configService.updateConfig(provider, apiKey, model, baseUrl);
 
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);

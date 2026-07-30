@@ -54,11 +54,15 @@ npm run dev
 
 ### 配置
 
-LLM 相关配置（用于 AI 语义匹配）通过**环境变量**注入，**不写入仓库**：
+LLM 相关配置（用于 AI 语义匹配）有两种注入方式，**均不写入仓库**：
 
-- `OPENAI_API_KEY` / `SILICONFLOW_API_KEY` / `ANTHROPIC_API_KEY`
-- `ANTHROPIC_BASE_URL`（可选，内部代理地址）
-- `ANTHROPIC_MODEL`（可选）
+- **方式一（推荐，持久化到本地）**：在应用内「设置」页填写 provider / API Key / Base URL / 模型并保存。API Key 以 AES/GCM 加密后落盘到本地 SQLite（`~/.dbdoc-ai/dbdoc.db` 的 `llm_config` 表，主密钥来自 `~/.dbdoc-ai/.masterkey` 或环境变量 `DBDOC_MASTER_KEY`）；Base URL 按 provider 明文持久化（URL 非密钥）。重启后自动加载，无需重复配置。
+- **方式二（环境变量，仅本次进程）**：通过环境变量注入，优先级低于「设置」页已保存的值：
+  - `OPENAI_API_KEY` / `SILICONFLOW_API_KEY` / `ANTHROPIC_API_KEY`
+  - `ANTHROPIC_BASE_URL`（可选，内部代理地址）
+  - `ANTHROPIC_MODEL`（可选）
+
+> 注意：`application.yml` 中 Anthropic 的 `base-url` 默认是 `<内部LLM代理地址>` 占位符，外部用户请通过「设置」页或 `ANTHROPIC_BASE_URL` 填入真实地址。
 
 本地最小鉴权默认开启：请求需在头中携带 `X-DBDoc-Token`，令牌由后端首次启动自动生成于 `~/.dbdoc-ai/.local-token`（Electron 模式由主进程读取并注入）。**纯本地无外部访问的开发环境**，可将 `application.yml` 中 `dbdoc.auth.enabled` 设为 `false` 关闭鉴权。
 
