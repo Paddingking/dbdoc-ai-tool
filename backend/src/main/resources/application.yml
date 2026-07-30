@@ -31,7 +31,7 @@ llm:
     model: Qwen/Qwen2.5-7B-Instruct
   anthropic:
     api-key: ${ANTHROPIC_API_KEY:}
-    base-url: ${ANTHROPIC_BASE_URL:https://<内部LLM代理地址>/anthropic}
+    base-url: ${ANTHROPIC_BASE_URL:https://api.anthropic.com}
     model: ${ANTHROPIC_MODEL:g-deepseek-v4-pro}
 
 # 本地最小鉴权（P0-2 修复，fail-closed）。

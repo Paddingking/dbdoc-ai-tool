@@ -70,7 +70,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -87,7 +87,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -106,7 +106,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -125,7 +125,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -144,7 +144,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -162,7 +162,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -180,7 +180,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -212,7 +212,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -231,7 +231,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -252,7 +252,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -268,7 +268,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -287,7 +287,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -306,7 +306,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -334,7 +334,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -356,7 +356,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -371,7 +371,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -387,7 +387,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -404,7 +404,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -423,7 +423,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -445,7 +445,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -467,7 +467,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -489,7 +489,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -510,7 +510,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -530,7 +530,7 @@ public class DocumentController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("error", e.getMessage());
+            result.put("error", "服务内部错误");
             return ResponseEntity.ok(result);
         }
     }
@@ -722,7 +722,7 @@ public class DocumentController {
     private ResponseEntity<Map<String, Object>> errorResp(Exception e) {
         Map<String, Object> r = new HashMap<>();
         r.put("success", false);
-        r.put("error", e.getMessage());
+        r.put("error", "服务内部错误");
         boolean isBadRequest = e instanceof IllegalArgumentException;
         return ResponseEntity.status(isBadRequest ? 400 : 500).body(r);
     }

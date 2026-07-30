@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.*;
 
 @Service
@@ -231,12 +233,31 @@ public class SyncService {
         return result;
     }
 
-    private File getFullSnapshotFile(String dataSourceId, String schema) {
-        String userHome = System.getProperty("user.home");
-        File dir = new File(userHome, ".dbdoc-ai/snapshots");
-        if (!dir.exists()) dir.mkdirs();
-        String name = schema != null && !schema.isEmpty() ? dataSourceId + "_" + schema + ".json" : dataSourceId + ".json";
-        return new File(dir, name);
+    // 快照文件名需防御路径穿越：dataSourceId 强制 32 位 hex（与 DataSourceStoreService 生成一致），
+    // schema 仅允许 [A-Za-z0-9_]，并通过 canonical path 断言锁定在 snapshots 目录内。
+    File getFullSnapshotFile(String dataSourceId, String schema) {
+        if (dataSourceId == null || !dataSourceId.matches("[0-9a-fA-F]{32}")) {
+            throw new IllegalArgumentException("非法数据源 ID");
+        }
+        String name;
+        if (schema == null || schema.isEmpty()) {
+            name = dataSourceId + ".json";
+        } else if (schema.matches("^[A-Za-z0-9_]+$")) {
+            name = dataSourceId + "_" + schema + ".json";
+        } else {
+            throw new IllegalArgumentException("非法 schema 名称");
+        }
+        File outDir = new File(System.getProperty("user.home"), ".dbdoc-ai/snapshots");
+        if (!outDir.exists()) outDir.mkdirs();
+        try {
+            Path resolved = outDir.toPath().resolve(name).normalize();
+            if (!resolved.startsWith(outDir.toPath().normalize())) {
+                throw new SecurityException("快照路径越界，已阻断");
+            }
+            return resolved.toFile();
+        } catch (InvalidPathException e) {
+            throw new SecurityException("非法快照文件名");
+        }
     }
 
     private FullSnapshotDTO loadFullSnapshot(String dataSourceId, String schema) {
